@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ivane Narindoshvili | SECURELAB ELITE</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #00d2ff;
+        --danger: #ff4b2b;
+        --success: #00f260;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #02040a;
+        color: #e6edf3;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+      #matrix-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.1;
+        pointer-events: none;
+      }
+      .cyber-card {
+        background: rgba(13, 17, 23, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(48, 54, 61, 0.8);
+        border-radius: 28px;
+        transition: 0.3s ease;
+      }
+      .cyber-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 30px rgba(0, 210, 255, 0.05);
+      }
+      .ios-terminal {
+        background: #000;
+        border: 1px solid #333;
+        border-radius: 35px;
+        min-height: 550px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      }
+      .entropy-bar {
+        height: 12px;
+        border-radius: 20px;
+        background: #161b22;
+        overflow: hidden;
+      }
+      .entropy-fill {
+        height: 100%;
+        width: 0%;
+        transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #iosOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.98);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 20px 0;
+      }
+      .iphone-15 {
+        width: 360px;
+        height: 740px;
+        background: #000;
+        border: 12px solid #222;
+        border-radius: 60px;
+        position: relative;
+        box-shadow: 0 0 100px rgba(157, 80, 187, 0.3);
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .dynamic-island {
+        width: 110px;
+        height: 30px;
+        background: #000;
+        border-radius: 20px;
+        margin: 12px auto;
+        position: relative;
+        z-index: 100;
+      }
+      #torBrowserUI {
+        position: absolute;
+        inset: 0;
+        background: #0d0d0d;
+        display: none;
+        flex-direction: column;
+        animation: slideUp 0.6s ease-out forwards;
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      input {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid #30363d !important;
+        transition: 0.3s;
+      }
+      input:focus {
+        border-color: var(--accent) !important;
+        outline: none;
+      }
+      .tag {
+        font-size: 10px;
+        font-weight: 800;
+        padding: 6px 14px;
+        border-radius: 100px;
+        border: 1px solid #30363d;
+        color: #484f58;
+        transition: 0.4s;
+      }
+      .tag-active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(0, 210, 255, 0.05);
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-10">
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="max-w-6xl mx-auto space-y-8">
+      <header
+        class="flex flex-col md:flex-row justify-between items-center gap-6"
+      >
+        <div>
+          <h1
+            class="text-4xl font-[900] italic tracking-tighter uppercase text-white"
+          >
+            SecureLab <span class="text-blue-500">Elite</span>
+          </h1>
+          <p
+            class="text-[10px] tracking-[0.4em] text-slate-500 font-bold uppercase mt-1"
+          >
+            Ivane Narindoshvili
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <div id="t1" class="tag">RECON</div>
+          <div id="t2" class="tag">INFILTRATE</div>
+          <div id="t3" class="tag">EXFIL</div>
+          <div id="t4" class="tag">CLEANUP</div>
+        </div>
+      </header>
+
+      <section
+        class="cyber-card p-8 border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-500/5 to-transparent"
+      >
+        <div class="flex items-start gap-6">
+          <div class="hidden md:block text-4xl">🧪</div>
+          <div class="space-y-2">
+            <h2
+              class="text-sm font-black text-blue-500 uppercase tracking-widest"
+            >
+              Global Protocol
+            </h2>
+            <p class="text-slate-400 leading-relaxed text-sm">
+              Welcome to the
+              <span class="text-white font-bold">Elite Simulation Hub</span>.
+              This tool is built to visualize the lifecycle of a data breach. By
+              entering a test credential, you can monitor how automated scripts
+              perform reconnaissance, crack security layers, and ultimately
+              auction off sensitive data on the dark web.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-5 space-y-8">
+          <section class="cyber-card p-8">
+            <h3
+              class="text-xs font-black text-slate-500 uppercase mb-6 tracking-widest"
+            >
+              System Input
+            </h3>
+            <div class="space-y-5">
+              <div>
+                <label
+                  class="text-[10px] font-bold text-slate-500 uppercase mb-2 block"
+                  >Target Email</label
+                >
+                <input
+                  id="mailField"
+                  type="text"
+                  placeholder="e.g. root@system.com"
+                  class="w-full p-4 rounded-2xl text-white outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  class="text-[10px] font-bold text-slate-500 uppercase mb-2 block"
+                  >Test Password</label
+                >
+                <input
+                  id="passField"
+                  type="text"
+                  placeholder="••••••••"
+                  class="w-full p-4 rounded-2xl text-white outline-none"
+                  oninput="analyzeStrength(this.value)"
+                />
+              </div>
+            </div>
+          </section>
+
+          <section class="cyber-card p-8">
+            <div class="flex justify-between items-end mb-4">
+              <h3
+                class="text-xs font-black text-slate-500 uppercase tracking-widest"
+              >
+                Crack Resistance
+              </h3>
+              <span
+                id="pScore"
+                class="text-xl font-mono font-bold text-blue-400"
+                >0%</span
+              >
+            </div>
+            <div class="entropy-bar mb-6">
+              <div
+                id="pFill"
+                class="entropy-fill bg-gradient-to-r from-red-600 via-yellow-500 to-green-500"
+              ></div>
+            </div>
+            <p id="pDesc" class="text-xs text-slate-400 italic mb-8">
+              System awaiting parameters...
+            </p>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div
+                id="l-8"
+                class="text-[9px] font-bold p-3 border border-white/5 rounded-xl text-slate-600 uppercase tracking-tighter transition-all"
+              >
+                • 8+ Characters
+              </div>
+              <div
+                id="l-up"
+                class="text-[9px] font-bold p-3 border border-white/5 rounded-xl text-slate-600 uppercase tracking-tighter transition-all"
+              >
+                • Uppercase
+              </div>
+              <div
+                id="l-num"
+                class="text-[9px] font-bold p-3 border border-white/5 rounded-xl text-slate-600 uppercase tracking-tighter transition-all"
+              >
+                • Numbers
+              </div>
+              <div
+                id="l-spec"
+                class="text-[9px] font-bold p-3 border border-white/5 rounded-xl text-slate-600 uppercase tracking-tighter transition-all"
+              >
+                • Special Char
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div
+            class="ios-terminal"
+            onclick="document.getElementById('cmd').focus()"
+          >
+            <div
+              class="bg-[#1a1a1a] px-8 py-3 flex items-center justify-center relative"
+            >
+              <div class="flex gap-1.5 absolute left-6">
+                <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+              </div>
+              <span class="text-[11px] font-bold text-slate-400"
+                >bash — 80×24</span
+              >
+            </div>
+
+            <div
+              id="termBody"
+              class="p-8 font-mono text-[13px] text-slate-300 space-y-2 flex-grow overflow-y-auto bg-black"
+            >
+              <p class="text-blue-500 font-bold">
+                >>> SECURELAB OS INITIALIZED.
+              </p>
+              <p class="text-slate-500 italic">
+                Available: <b>scan_ports</b>, <b>get_ip</b>, <b>recon</b>,
+                <b>bypass_firewall</b>, <b>crack</b>, <b>clear_logs</b>
+              </p>
+            </div>
+
+            <div
+              class="p-6 border-t border-white/5 flex items-center gap-3 bg-[#0a0a0a]"
+            >
+              <span class="text-[#27c93f] font-bold">~root$</span>
+              <input
+                id="cmd"
+                type="text"
+                class="bg-transparent border-none p-0 w-full font-mono text-white outline-none rounded-[15px]"
+                placeholder=""
+                autocomplete="off"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer
+        class="text-center py-20 opacity-20 text-[9px] font-black uppercase tracking-[1em]"
+      >
+        &copy; Ivane Narindoshvili | SecureLab 2026
+      </footer>
+    </div>
+
+    <div id="iosOverlay">
+      <div class="iphone-15">
+        <div class="dynamic-island"></div>
+        <div
+          class="h-full w-full p-8 flex flex-col bg-[url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=400')] bg-cover"
+        >
+          <div class="flex justify-between text-[11px] font-black text-white">
+            <span id="iosClock">00:00</span>
+            <span class="opacity-50">5G 📶 98%</span>
+          </div>
+
+          <div
+            id="torLauncher"
+            class="mt-20 flex flex-col items-center gap-4 cursor-pointer group"
+          >
+            <div
+              class="w-20 h-20 bg-[#7D4698] rounded-[28px] flex items-center justify-center shadow-2xl transition-transform group-hover:scale-105"
+            >
+              <svg width="50" height="50" viewBox="0 0 100 100" fill="white">
+                <path
+                  d="M50 10C27.9 10 10 27.9 10 50s17.9 40 40 40 40-17.9 40-40S72.1 10 50 10zm0 74c-18.8 0-34-15.2-34-34s15.2-34 34-34 34 15.2 34 34-15.2 34-34 34zm-8-34c0 4.4 3.6 8 8 8s8-3.6 8-8-3.6-8-8-8-8 3.6-8 8zm8-20c-11 0-20 9-20 20s9 20 20 20 20-9 20-20-9-20-20-20z"
+                />
+              </svg>
+            </div>
+            <span
+              class="text-[10px] font-black text-white uppercase tracking-widest shadow-lg"
+              >Tor Browser</span
+            >
+          </div>
+
+          <div id="torBrowserUI">
+            <div
+              class="p-5 bg-[#1a1a1a] flex items-center gap-3 border-b border-white/5"
+            >
+              <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+              <div
+                class="bg-black/50 text-[8px] p-2 px-3 rounded-lg text-purple-400 flex-1 font-mono truncate"
+              >
+                darkbay_v4.onion/listing/live_log
+              </div>
+            </div>
+            <div
+              class="p-8 flex-1 flex flex-col font-mono text-[11px] overflow-y-auto"
+            >
+              <h3
+                class="text-rose-500 font-black tracking-widest mb-6 uppercase italic"
+              >
+                New Breach Listing
+              </h3>
+              <div class="space-y-4">
+                <div
+                  class="p-5 bg-white/5 rounded-2xl border border-white/5 space-y-2"
+                >
+                  <p class="text-slate-500">
+                    TARGET: <span id="dwUser" class="text-white"></span>
+                  </p>
+                  <p class="text-slate-500">
+                    SECRET: <span id="dwPass" class="text-emerald-400"></span>
+                  </p>
+                </div>
+                <p id="dwStatus" class="text-amber-500 italic">
+                  Connecting to onion nodes...
+                </p>
+              </div>
+              <div
+                id="soldBox"
+                class="hidden mt-12 p-8 border-2 border-emerald-500 bg-emerald-500/10 text-emerald-400 rounded-[30px] text-center animate-bounce"
+              >
+                <p class="text-[10px] font-black uppercase tracking-[0.2em]">
+                  Asset Auctioned
+                </p>
+                <p class="text-2xl font-bold mt-2">+0.094 BTC</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="finalOverlay"
+      class="fixed inset-0 bg-black z-[3000] hidden items-center justify-center text-center p-10"
+    >
+      <div class="max-w-2xl space-y-10">
+        <div class="text-8xl">🛡️</div>
+        <h2
+          class="text-5xl font-black text-white italic uppercase tracking-tighter"
+        >
+          Mission Accomplished
+        </h2>
+        <p class="text-xl text-slate-400 leading-relaxed font-medium">
+          Your data was "sold" in just a few seconds. This simulation
+          demonstrates how vulnerable simple passwords truly are. Protect your
+          digital identity by using complex combinations and enabling Two-Factor
+          Authentication (2FA).
+        </p>
+        <button
+          onclick="location.reload()"
+          class="px-14 py-6 bg-blue-600 text-white font-black rounded-full uppercase text-xs tracking-[0.3em] hover:bg-blue-500 transition-all shadow-2xl shadow-blue-500/40"
+        >
+          Restart System
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
